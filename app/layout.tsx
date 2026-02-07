@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "SaaS Subscription Management Platform",
   description:
     "Manage subscriptions, customers, and revenue with a secure production-ready SaaS platform.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
