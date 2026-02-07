@@ -1,69 +1,134 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getSession } from "@/lib/getSession";
 import { pool } from "@/lib/db";
-import { ROLES } from "@/lib/roles";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+/**
+ * ⚠️ IMPORTANT
+ * La version DOIT correspondre à celle imposée par le SDK installé
+ */
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2026-01-28.clover",
+});
 
 export async function POST(req: Request) {
-  const session = await getSession();
+  const signature = req.headers.get("stripe-signature");
 
-  if (!session || session.role !== ROLES.CUSTOMER) {
+  if (!signature) {
     return NextResponse.json(
-      { success: false, message: "Unauthorized" },
-      { status: 401 },
-    );
-  }
-
-  const { planId } = await req.json();
-
-  if (!planId) {
-    return NextResponse.json(
-      { success: false, message: "Missing planId" },
+      { success: false, message: "Missing Stripe signature" },
       { status: 400 },
     );
   }
 
-  const planResult = await pool.query(
-    `SELECT name, price_cents, interval FROM plans WHERE id = $1`,
-    [planId],
-  );
+  const body = await req.text();
 
-  if (planResult.rowCount === 0) {
+  let event: Stripe.Event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!,
+    );
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown Stripe error";
+
+    console.error("❌ Stripe signature verification failed:", message);
+
     return NextResponse.json(
-      { success: false, message: "Plan not found" },
-      { status: 404 },
+      { success: false, message: "Invalid signature" },
+      { status: 400 },
     );
   }
 
-  const plan = planResult.rows[0];
+  try {
+    switch (event.type) {
+      /* ===============================
+         SUBSCRIPTION CREATED (Checkout)
+      =============================== */
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
 
-  const checkoutSession = await stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: plan.name,
-          },
-          unit_amount: plan.price_cents,
-        },
-        quantity: 1,
-      },
-    ],
-    metadata: {
-      userId: session.userId,
-      planId,
-    },
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/customer/dashboard?success=1`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/customer/plans?canceled=1`,
-  });
+        const userId = session.metadata?.userId;
+        const planId = session.metadata?.planId;
+        const stripeSubscriptionId = session.subscription as string | null;
+        const stripeCustomerId = session.customer as string | null;
 
-  return NextResponse.json({
-    success: true,
-    url: checkoutSession.url,
-  });
+        if (!userId || !planId || !stripeSubscriptionId || !stripeCustomerId) {
+          break;
+        }
+
+        await pool.query(
+          `
+          INSERT INTO subscriptions (
+            user_id,
+            plan_id,
+            status,
+            stripe_subscription_id,
+            stripe_customer_id,
+            started_at
+          )
+          VALUES ($1, $2, 'ACTIVE', $3, $4, NOW())
+          ON CONFLICT (stripe_subscription_id) DO NOTHING
+          `,
+          [userId, planId, stripeSubscriptionId, stripeCustomerId],
+        );
+
+        break;
+      }
+
+      /* ===============================
+         SUBSCRIPTION UPDATED
+      =============================== */
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
+
+        await pool.query(
+          `
+          UPDATE subscriptions
+          SET status = $1
+          WHERE stripe_subscription_id = $2
+          `,
+          [subscription.status.toUpperCase(), subscription.id],
+        );
+
+        break;
+      }
+
+      /* ===============================
+         SUBSCRIPTION CANCELED
+      =============================== */
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+
+        await pool.query(
+          `
+          UPDATE subscriptions
+          SET status = 'CANCELED',
+              ended_at = NOW()
+          WHERE stripe_subscription_id = $1
+          `,
+          [subscription.id],
+        );
+
+        break;
+      }
+
+      default:
+        // événements ignorés volontairement
+        break;
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Unknown webhook error";
+
+    console.error("❌ Webhook processing error:", message);
+
+    return NextResponse.json(
+      { success: false, message: "Webhook handler failed" },
+      { status: 500 },
+    );
+  }
 }

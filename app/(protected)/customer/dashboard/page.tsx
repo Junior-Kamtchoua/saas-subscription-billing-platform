@@ -6,9 +6,11 @@ import { useEffect, useState } from "react";
    Types
 ====================== */
 
+type SubscriptionStatus = "ACTIVE" | "CANCELED" | "PAST_DUE";
+
 type Subscription = {
   subscription_id: string;
-  status: "ACTIVE" | "CANCELED";
+  status: SubscriptionStatus;
   started_at: string;
   ended_at: string | null;
   plan_name: string;
@@ -75,9 +77,7 @@ export default function CustomerDashboard() {
             <div className="flex items-center justify-between">
               <p className="text-lg font-semibold">{subscription.plan_name}</p>
 
-              <span className="rounded bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                {subscription.status}
-              </span>
+              <StatusBadge status={subscription.status} />
             </div>
 
             <p className="text-gray-600">
@@ -89,13 +89,23 @@ export default function CustomerDashboard() {
               {new Date(subscription.started_at).toLocaleDateString()}
             </p>
 
-            <a
-              href="/customer/plans"
-              className="inline-block rounded bg-blue-600 px-4 py-2 text-white
-                         hover:bg-blue-700 transition cursor-pointer"
-            >
-              Change plan
-            </a>
+            <div className="flex gap-3 pt-2">
+              <a
+                href="/customer/plans"
+                className="rounded bg-blue-600 px-4 py-2 text-white
+                           hover:bg-blue-700 transition cursor-pointer"
+              >
+                Change plan
+              </a>
+
+              <a
+                href="/api/stripe/portal"
+                className="rounded border px-4 py-2 text-sm font-medium
+                           hover:bg-gray-100 transition cursor-pointer"
+              >
+                Manage billing
+              </a>
+            </div>
           </div>
         ) : (
           <div className="rounded-lg border border-dashed bg-gray-50 p-6 text-center">
@@ -128,5 +138,20 @@ function Kpi({ title, value }: { title: string; value: string }) {
       <p className="text-xs uppercase tracking-wide text-gray-500">{title}</p>
       <p className="mt-2 text-2xl font-bold">{value}</p>
     </div>
+  );
+}
+
+function StatusBadge({ status }: { status: SubscriptionStatus }) {
+  const styles =
+    status === "ACTIVE"
+      ? "bg-green-100 text-green-700"
+      : status === "PAST_DUE"
+        ? "bg-yellow-100 text-yellow-700"
+        : "bg-red-100 text-red-700";
+
+  return (
+    <span className={`rounded px-3 py-1 text-sm font-medium ${styles}`}>
+      {status}
+    </span>
   );
 }
