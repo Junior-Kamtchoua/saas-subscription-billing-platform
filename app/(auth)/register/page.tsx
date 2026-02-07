@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuth } from "@/lib/authClient";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -10,24 +9,12 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-
-  // 🔒 Bloquer l'accès à /register si déjà connecté
-  useEffect(() => {
-    const { logged, role } = getAuth();
-
-    if (logged && role === "ADMIN") {
-      router.replace("/admin/dashboard");
-      return;
-    }
-
-    if (logged && role === "CUSTOMER") {
-      router.replace("/customer/dashboard");
-    }
-  }, [router]);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
     const res = await fetch("/api/auth/register", {
       method: "POST",
@@ -36,19 +23,20 @@ export default function RegisterPage() {
     });
 
     const data = await res.json();
+    setLoading(false);
 
     if (!res.ok || !data.success) {
       setMessage(data.message || "Registration failed");
       return;
     }
 
-    // 👉 Tu as déjà choisi de rediriger vers /login après register
+    // 👉 Redirection volontaire vers login
     router.replace("/login");
   }
 
   return (
-    <div className="w-full max-w-md bg-white p-6 rounded-lg shadow">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
+    <div className="mx-auto w-full max-w-md rounded-lg bg-white p-6 shadow">
+      <h1 className="mb-4 text-2xl font-bold">Create account</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -56,7 +44,7 @@ export default function RegisterPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          className="w-full border p-2 rounded"
+          className="w-full rounded border p-3"
           required
         />
 
@@ -65,20 +53,21 @@ export default function RegisterPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
-          className="w-full border p-2 rounded"
+          className="w-full rounded border p-3"
           required
         />
 
         <button
           type="submit"
-          className="w-full bg-black text-white py-2 rounded"
+          disabled={loading}
+          className="w-full rounded bg-black py-3 text-white transition hover:bg-gray-800 disabled:opacity-50"
         >
-          Create account
+          {loading ? "Creating account..." : "Register"}
         </button>
       </form>
 
       {message && (
-        <p className="mt-4 text-sm text-center text-red-600">{message}</p>
+        <p className="mt-4 text-center text-sm text-red-600">{message}</p>
       )}
     </div>
   );
