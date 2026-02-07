@@ -41,14 +41,12 @@ export async function POST(req: Request) {
 
     const role = user.role === ROLES.ADMIN ? ROLES.ADMIN : ROLES.CUSTOMER;
 
-    // ✅ Réponse HTTP
     const response = NextResponse.json({
       success: true,
       role,
       userId: user.id,
     });
 
-    // 🔒 Cookie httpOnly (CORRECT)
     response.cookies.set(
       "session",
       JSON.stringify({

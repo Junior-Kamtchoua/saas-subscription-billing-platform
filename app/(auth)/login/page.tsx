@@ -27,8 +27,6 @@ export default function LoginPage() {
       return;
     }
 
-    // ✅ Le cookie httpOnly est posé par l’API
-    // ✅ Le middleware gère la redirection finale
     if (data.role === "ADMIN") {
       router.replace("/admin/dashboard");
     } else {

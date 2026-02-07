@@ -18,7 +18,6 @@ export async function GET() {
     );
   }
 
-  // 🔎 Récupérer le customer Stripe depuis la DB
   const result = await pool.query(
     `
     SELECT stripe_customer_id
@@ -39,12 +38,10 @@ export async function GET() {
 
   const stripeCustomerId = result.rows[0].stripe_customer_id;
 
-  // 🔗 Créer une session Billing Portal
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: stripeCustomerId,
     return_url: `${process.env.NEXT_PUBLIC_APP_URL}/customer/dashboard`,
   });
 
-  // 🔁 Redirection vers Stripe
   return NextResponse.redirect(portalSession.url);
 }

@@ -5,7 +5,6 @@ import { ROLES } from "@/lib/roles";
 
 export async function POST(req: Request) {
   try {
-    // 🔒 Session (cookie httpOnly)
     const session = await getSession();
     if (!session) {
       return NextResponse.json(
@@ -16,7 +15,7 @@ export async function POST(req: Request) {
 
     const { userId, role } = session;
 
-    // 🔒 Only customers
+    // Only customers
     if (role !== ROLES.CUSTOMER) {
       return NextResponse.json(
         { success: false, message: "Only customers can subscribe" },
@@ -33,7 +32,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 🚫 Sécurité : déjà un abonnement actif ?
     const existing = await pool.query(
       `
       SELECT id
@@ -50,7 +48,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // ✅ Créer l’abonnement actif
     await pool.query(
       `
       INSERT INTO subscriptions (user_id, plan_id, status)
@@ -59,7 +56,6 @@ export async function POST(req: Request) {
       [userId, planId],
     );
 
-    // ✅ Activity event (source unique Admin dashboard)
     await pool.query(
       `
       INSERT INTO activity_events (user_id, type, metadata)

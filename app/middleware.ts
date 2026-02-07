@@ -11,7 +11,6 @@ export function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith("/admin");
   const isCustomerRoute = pathname.startsWith("/customer");
 
-  // 🔒 Pas connecté → login
   if ((isAdminRoute || isCustomerRoute) && !sessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -20,19 +19,16 @@ export function middleware(request: NextRequest) {
     try {
       const session = JSON.parse(sessionCookie.value);
 
-      // ❌ CUSTOMER essaye d’aller sur /admin
       if (isAdminRoute && session.role !== "ADMIN") {
         return NextResponse.redirect(
           new URL("/customer/dashboard", request.url),
         );
       }
 
-      // ❌ ADMIN essaye d’aller sur /customer
       if (isCustomerRoute && session.role !== "CUSTOMER") {
         return NextResponse.redirect(new URL("/admin/dashboard", request.url));
       }
 
-      // 🔁 connecté + pages auth
       if (isAuthRoute) {
         return NextResponse.redirect(
           new URL(

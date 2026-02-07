@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/* ======================
-   Types
-====================== */
+/*Types*/
 
 type Subscription = {
   id: string;
@@ -16,9 +14,7 @@ type Subscription = {
   interval: string;
 };
 
-/* ======================
-   Component
-====================== */
+/*Component*/
 
 export default function CustomerSubscriptionPage() {
   const [subs, setSubs] = useState<Subscription[]>([]);

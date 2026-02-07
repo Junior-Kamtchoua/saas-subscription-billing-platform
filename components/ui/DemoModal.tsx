@@ -30,7 +30,6 @@ export default function DemoModal({ open, onClose }: DemoModalProps) {
         {/* Video */}
         <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
           <video className="h-full w-full" controls autoPlay muted playsInline>
-            {/* 👉 TU METTRAS TA VIDÉO ICI PLUS TARD */}
             <source src="/demo/demo.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>

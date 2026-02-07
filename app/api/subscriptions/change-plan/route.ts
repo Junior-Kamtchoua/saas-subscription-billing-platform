@@ -5,7 +5,6 @@ import { ROLES } from "@/lib/roles";
 
 export async function POST(req: Request) {
   try {
-    // 🔒 Session depuis cookie httpOnly
     const session = await getSession();
 
     if (!session) {
@@ -17,7 +16,6 @@ export async function POST(req: Request) {
 
     const { userId, role } = session;
 
-    // 🔒 Seuls les customers peuvent changer de plan
     if (role !== ROLES.CUSTOMER) {
       return NextResponse.json(
         { success: false, message: "Only customers can change plan" },
@@ -34,7 +32,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 🔍 Récupérer l’abonnement actif actuel
     const activeSubResult = await pool.query(
       `
       SELECT id, plan_id
@@ -54,7 +51,6 @@ export async function POST(req: Request) {
 
     const activeSub = activeSubResult.rows[0];
 
-    // 🚫 Même plan → inutile
     if (activeSub.plan_id === newPlanId) {
       return NextResponse.json(
         { success: false, message: "Already on this plan" },
@@ -62,7 +58,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1️⃣ Annuler l’abonnement actif
     await pool.query(
       `
       UPDATE subscriptions
@@ -73,7 +68,6 @@ export async function POST(req: Request) {
       [activeSub.id],
     );
 
-    // 2️⃣ Créer le nouvel abonnement actif (IMPORTANT : started_at)
     await pool.query(
       `
       INSERT INTO subscriptions (user_id, plan_id, status, started_at)
@@ -84,7 +78,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    // ⚠️ Sécurité DB : index unique (1 abonnement actif max)
     if (
       typeof error === "object" &&
       error !== null &&

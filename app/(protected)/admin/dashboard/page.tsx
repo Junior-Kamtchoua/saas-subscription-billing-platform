@@ -15,10 +15,6 @@ import {
   Cell,
 } from "recharts";
 
-/* =======================
-   Types
-======================= */
-
 type Stats = {
   users: number;
   activeSubscriptions: number;
@@ -29,10 +25,6 @@ type RevenueByMonth = { month: string; revenue: number };
 type SubscriptionsByPlan = { name: string; count: number };
 type UsersByMonth = { month: string; count: number };
 type SubscriptionsByStatus = { status: string; count: number };
-
-/* =======================
-   Component
-======================= */
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -81,9 +73,7 @@ export default function AdminDashboard() {
     <div className="space-y-14">
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
 
-      {/* =======================
-          KPIs
-      ======================= */}
+      {/*KPIs*/}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <KpiCard title="Users" value={stats?.users} loading={loading} />
         <KpiCard
@@ -98,9 +88,7 @@ export default function AdminDashboard() {
         />
       </div>
 
-      {/* =======================
-          Charts
-      ======================= */}
+      {/*Charts*/}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <ChartCard title="Revenue Over Time" loading={loading}>
           {!loading && (
@@ -200,9 +188,7 @@ export default function AdminDashboard() {
   );
 }
 
-/* =======================
-   UI Components
-======================= */
+/*UI Components*/
 
 function KpiCard({
   title,

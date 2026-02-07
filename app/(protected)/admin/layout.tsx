@@ -12,9 +12,7 @@ const navItems = [
   { label: "Revenue", href: "/admin/revenue", icon: "💰" },
 ];
 
-/* =========================
-   NAV LINKS (STABLE)
-========================= */
+/*NAV LINKS*/
 function NavLinks({
   pathname,
   onNavigate,
@@ -48,9 +46,7 @@ function NavLinks({
   );
 }
 
-/* =========================
-   ADMIN LAYOUT
-========================= */
+/*ADMIN LAYOUT*/
 export default function AdminLayout({
   children,
 }: {
@@ -67,7 +63,7 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
-      {/* ===== MOBILE HEADER ===== */}
+      {/* MOBILE HEADER */}
       <header className="sm:hidden fixed top-0 inset-x-0 z-40 flex items-center justify-between bg-gray-900 px-4 py-3 text-white">
         <span className="font-bold">Admin Panel</span>
         <button
@@ -79,7 +75,7 @@ export default function AdminLayout({
         </button>
       </header>
 
-      {/* ===== MOBILE DRAWER ===== */}
+      {/* MOBILE DRAWER */}
       {mobileOpen && (
         <div className="sm:hidden fixed inset-0 z-50">
           <div
@@ -112,7 +108,7 @@ export default function AdminLayout({
         </div>
       )}
 
-      {/* ===== DESKTOP ===== */}
+      {/* DESKTOP */}
       <div className="flex min-h-screen">
         <aside className="hidden sm:flex w-64 bg-gray-900 text-white flex-col">
           <div className="px-6 py-4 text-xl font-bold border-b border-gray-700">

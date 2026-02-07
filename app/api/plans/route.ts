@@ -28,7 +28,7 @@ export async function GET() {
         "Dedicated support",
         "Advanced security",
       ],
-      active: true, // ne s'affichera pas
+      active: true,
     },
   ]);
 }

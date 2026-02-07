@@ -4,7 +4,6 @@ import { getSession } from "@/lib/getSession";
 import { ROLES } from "@/lib/roles";
 
 export async function GET(req: Request) {
-  // 🔐 Sécurité admin
   const session = await getSession();
   if (!session || session.role !== ROLES.ADMIN) {
     return NextResponse.json({ success: false }, { status: 403 });
@@ -12,15 +11,12 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
 
-  // 📄 Pagination
   const page = Number(searchParams.get("page") ?? 1);
   const limit = 10;
   const offset = (page - 1) * limit;
 
-  // 🔍 Recherche par email
   const q = searchParams.get("q") ?? "";
 
-  // 👥 Users (avec filtre email)
   const usersResult = await pool.query(
     `
     SELECT
@@ -42,7 +38,6 @@ export async function GET(req: Request) {
     [`%${q}%`, limit, offset],
   );
 
-  // 🔢 Total (pour pagination)
   const countResult = await pool.query(
     `SELECT COUNT(*) FROM users WHERE email ILIKE $1`,
     [`%${q}%`],

@@ -26,7 +26,6 @@ export async function POST(req: Request) {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // ✅ Création user
   const userResult = await pool.query(
     `
     INSERT INTO users (email, password, role)
@@ -38,7 +37,7 @@ export async function POST(req: Request) {
 
   const userId = userResult.rows[0].id;
 
-  // ✅ Activity event
+  // Activity event
   await pool.query(
     `
     INSERT INTO activity_events (user_id, type)

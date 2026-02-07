@@ -5,7 +5,6 @@ import { ROLES } from "@/lib/roles";
 
 export async function POST() {
   try {
-    // 🔒 Session depuis cookie httpOnly
     const session = await getSession();
 
     if (!session) {
@@ -17,7 +16,6 @@ export async function POST() {
 
     const { userId, role } = session;
 
-    // 🔒 Seuls les customers peuvent annuler
     if (role !== ROLES.CUSTOMER) {
       return NextResponse.json(
         { success: false, message: "Only customers can cancel" },
@@ -25,7 +23,6 @@ export async function POST() {
       );
     }
 
-    // 🔍 Récupérer l’abonnement actif
     const subResult = await pool.query(
       `
       SELECT id, plan_id
@@ -44,7 +41,6 @@ export async function POST() {
 
     const subscription = subResult.rows[0];
 
-    // ❌ Annuler l’abonnement
     await pool.query(
       `
       UPDATE subscriptions
@@ -55,7 +51,7 @@ export async function POST() {
       [subscription.id],
     );
 
-    // 📝 Activity event (ADMIN → Activity)
+    //  Activity event (ADMIN → Activity)
     await pool.query(
       `
       INSERT INTO activity_events (user_id, type, metadata)

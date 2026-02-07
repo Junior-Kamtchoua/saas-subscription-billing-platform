@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json({ success: false }, { status: 403 });
   }
 
-  // 🔹 Revenue par mois
+  // MONTH
   const revenueResult = await pool.query(`
     SELECT
       DATE_TRUNC('month', s.started_at) AS month,
@@ -22,7 +22,7 @@ export async function GET() {
     ORDER BY month
   `);
 
-  // 🔹 Abonnements par plan
+  // SUBSCRIPTION
   const plansResult = await pool.query(`
     SELECT
       p.name,
@@ -33,7 +33,7 @@ export async function GET() {
     GROUP BY p.name
   `);
 
-  // 🔹 Nouveaux users par mois
+  // MONTHLY USERS
   const usersByMonthResult = await pool.query(`
     SELECT
       DATE_TRUNC('month', created_at) AS month,
@@ -43,7 +43,7 @@ export async function GET() {
     ORDER BY month
   `);
 
-  // 🔹 Abonnements par statut (ACTIVE / CANCELED)
+  // STATUS
   const subscriptionsByStatusResult = await pool.query(`
     SELECT
       status,

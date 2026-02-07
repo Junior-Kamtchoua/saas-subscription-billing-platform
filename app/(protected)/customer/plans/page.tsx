@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/* ======================
-   Types
-====================== */
+/* Types */
 type Plan = {
   id: string;
   name: string;
@@ -16,9 +14,7 @@ type Subscription = {
   plan_name: string;
 };
 
-/* ======================
-   Component
-====================== */
+/*Component*/
 export default function CustomerPlansPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);

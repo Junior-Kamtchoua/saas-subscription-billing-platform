@@ -16,14 +16,6 @@ export async function GET(req: Request) {
     const limit = 10;
     const offset = (page - 1) * limit;
 
-    /**
-     * 🔥 SOURCE UNIQUE : activity_events
-     * Types :
-     * - USER_REGISTERED
-     * - SUBSCRIPTION_STARTED
-     * - SUBSCRIPTION_CANCELED
-     * - SUBSCRIPTION_CHANGED
-     */
     const activityResult = await pool.query(
       `
       SELECT

@@ -46,9 +46,7 @@ export default function CustomerLayout({
 
   return (
     <div className="flex min-h-screen bg-gray-100 text-gray-900">
-      {/* =====================
-          SIDEBAR
-      ===================== */}
+      {/*SIDEBAR*/}
       <aside className="w-64 bg-white border-r flex flex-col">
         {/* HEADER */}
         <div className="px-6 py-5 border-b">
@@ -109,9 +107,7 @@ export default function CustomerLayout({
         </div>
       </aside>
 
-      {/* =====================
-          CONTENT
-      ===================== */}
+      {/*CONTENT*/}
       <main className="flex-1 p-8 overflow-y-auto">{children}</main>
     </div>
   );

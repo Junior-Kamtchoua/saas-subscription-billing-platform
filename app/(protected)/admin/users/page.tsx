@@ -21,9 +21,7 @@ export default function AdminUsersPage() {
 
   const [loading, setLoading] = useState(true);
 
-  /* =======================
-     🔍 Debounce search
-  ======================= */
+  /*Debounce search*/
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -33,9 +31,7 @@ export default function AdminUsersPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  /* =======================
-     📡 Fetch users
-  ======================= */
+  /*Fetch users*/
   useEffect(() => {
     async function loadUsers() {
       setLoading(true);
@@ -69,7 +65,7 @@ export default function AdminUsersPage() {
         </p>
       </div>
 
-      {/* 🔍 Search */}
+      {/* Search */}
       <div className="flex justify-center">
         <input
           type="text"

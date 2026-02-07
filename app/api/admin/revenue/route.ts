@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ success: false }, { status: 403 });
     }
 
-    // 💰 MRR (subscriptions actives)
+    // MRR
     const mrrResult = await pool.query(`
       SELECT COALESCE(SUM(p.price_cents), 0) AS mrr
       FROM subscriptions s
@@ -18,8 +18,6 @@ export async function GET() {
       WHERE s.status = 'ACTIVE'
     `);
 
-    // 📊 Revenue by month (UTILISE created_at, PLUS SÛR)
-    // 📊 Revenue by month (basé sur started_at)
     const monthlyResult = await pool.query(`
   SELECT
     DATE_TRUNC('month', s.started_at) AS month,
@@ -31,7 +29,6 @@ export async function GET() {
   ORDER BY month
 `);
 
-    // 📦 Revenue by plan
     const planResult = await pool.query(`
       SELECT
         p.name,

@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { pool } from "@/lib/db";
 
-/**
- * ⚠️ IMPORTANT
- * La version DOIT correspondre à celle imposée par le SDK installé
- */
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-01-28.clover",
 });
@@ -43,9 +39,7 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
-      /* ===============================
-         SUBSCRIPTION CREATED (Checkout)
-      =============================== */
+      /* SUBSCRIPTION CREATED (Checkout) */
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
 
@@ -77,9 +71,7 @@ export async function POST(req: Request) {
         break;
       }
 
-      /* ===============================
-         SUBSCRIPTION UPDATED
-      =============================== */
+      /*SUBSCRIPTION UPDATED*/
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
 
@@ -95,9 +87,7 @@ export async function POST(req: Request) {
         break;
       }
 
-      /* ===============================
-         SUBSCRIPTION CANCELED
-      =============================== */
+      /*SUBSCRIPTION CANCELED*/
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
 
@@ -115,7 +105,6 @@ export async function POST(req: Request) {
       }
 
       default:
-        // événements ignorés volontairement
         break;
     }
 

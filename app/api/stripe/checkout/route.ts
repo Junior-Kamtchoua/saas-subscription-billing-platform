@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-01-28.clover",
 });
 
-// 🔁 Mapping DB → Stripe (OBLIGATOIRE)
+// Mapping DB
 const INTERVAL_MAP: Record<string, Stripe.Price.Recurring.Interval> = {
   MONTHLY: "month",
   YEARLY: "year",
@@ -52,7 +52,6 @@ export async function POST(req: Request) {
 
     const plan = planResult.rows[0];
 
-    // ✅ Conversion sûre vers Stripe
     const stripeInterval = INTERVAL_MAP[plan.interval] ?? "month"; // fallback safe
 
     const checkoutSession = await stripe.checkout.sessions.create({

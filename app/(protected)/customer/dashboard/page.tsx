@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/* ======================
-   Types
-====================== */
+/* Types */
 
 type SubscriptionStatus = "ACTIVE" | "CANCELED" | "PAST_DUE";
 
@@ -18,9 +16,7 @@ type Subscription = {
   interval: string;
 };
 
-/* ======================
-   Component
-====================== */
+/*Component*/
 
 export default function CustomerDashboard() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -128,9 +124,7 @@ export default function CustomerDashboard() {
   );
 }
 
-/* ======================
-   UI
-====================== */
+/*UI*/
 
 function Kpi({ title, value }: { title: string; value: string }) {
   return (

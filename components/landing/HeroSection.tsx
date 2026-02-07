@@ -11,12 +11,12 @@ export default function HeroSection() {
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#1e293b] via-[#1f2a44] to-[#2b1f47]">
-      {/* ===== BACKGROUND BLOBS ===== */}
+      {/*BACKGROUND BLOBS*/}
       <div className="pointer-events-none absolute -top-1/4 -left-1/4 h-[700px] w-[700px] rounded-full bg-[#3b82f6]/20 blur-[160px]" />
       <div className="pointer-events-none absolute top-0 -right-1/4 h-[600px] w-[600px] rounded-full bg-[#6366f1]/20 blur-[160px]" />
       <div className="pointer-events-none absolute -bottom-1/3 left-1/4 h-[800px] w-[800px] rounded-full bg-[#8b5cf6]/15 blur-[180px]" />
 
-      {/* ===== CONTENT ===== */}
+      {/*CONTENT*/}
       <div className="relative z-10 mx-auto max-w-7xl px-6 pt-32 pb-40 animate-fade-in">
         <div className="grid grid-cols-1 items-center gap-20 lg:grid-cols-2">
           {/* LEFT — TEXT */}
@@ -97,7 +97,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* ===== BOTTOM WAVE ===== */}
+      {/* BOTTOM WAVE */}
       <div className="absolute bottom-0 left-0 w-full">
         <svg
           viewBox="0 0 1440 120"
@@ -111,7 +111,7 @@ export default function HeroSection() {
         </svg>
       </div>
 
-      {/* ===== DEMO MODAL ===== */}
+      {/* DEMO MODAL */}
       <DemoModal open={openDemo} onClose={() => setOpenDemo(false)} />
     </section>
   );

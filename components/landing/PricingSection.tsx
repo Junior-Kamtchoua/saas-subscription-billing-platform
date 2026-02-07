@@ -4,10 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
-/**
- * Plan tel qu'il est renvoyé par l'API
- * (aligné avec ta base de données)
- */
 type Plan = {
   id: string;
   name: string;
@@ -30,7 +26,6 @@ export default function PricingSection() {
 
         const data: Plan[] = await res.json();
 
-        // On n'affiche que les plans actifs
         setPlans(data.filter((plan) => plan.active));
       } catch (err) {
         console.error(err);
@@ -46,7 +41,7 @@ export default function PricingSection() {
   return (
     <section id="pricing" className="bg-white py-32">
       <div className="mx-auto max-w-7xl px-6">
-        {/* ===== TITLE ===== */}
+        {/*TITLE */}
         <div className="mb-20 text-center">
           <h2 className="text-3xl font-extrabold text-slate-900">
             Simple, transparent pricing
@@ -56,7 +51,7 @@ export default function PricingSection() {
           </p>
         </div>
 
-        {/* ===== STATES ===== */}
+        {/*STATES*/}
         {loading && (
           <p className="text-center text-slate-500">Loading plans…</p>
         )}
@@ -67,7 +62,7 @@ export default function PricingSection() {
           </p>
         )}
 
-        {/* ===== PLANS ===== */}
+        {/*PLANS*/}
         {!loading && !error && (
           <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
             {plans.map((plan) => (

@@ -23,7 +23,7 @@ export default function AdminSubscriptionsPage() {
 
   const [loading, setLoading] = useState(true);
 
-  // 🔍 Debounce search
+  // Debounce search
   useEffect(() => {
     const t = setTimeout(() => {
       setDebouncedSearch(search);
@@ -32,7 +32,7 @@ export default function AdminSubscriptionsPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  // 📡 Fetch subscriptions
+  // Fetch subscriptions
   useEffect(() => {
     async function loadSubs() {
       setLoading(true);

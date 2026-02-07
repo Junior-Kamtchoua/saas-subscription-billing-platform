@@ -5,7 +5,6 @@ import { ROLES } from "@/lib/roles";
 
 export async function POST() {
   try {
-    // 🔒 Lecture de la session depuis le cookie httpOnly
     const session = await getSession();
 
     if (!session) {
@@ -17,7 +16,6 @@ export async function POST() {
 
     const { userId, role } = session;
 
-    // 🔒 Seuls les customers peuvent consulter leur abonnement
     if (role !== ROLES.CUSTOMER) {
       return NextResponse.json(
         { success: false, message: "Only customers allowed" },

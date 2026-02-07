@@ -2,9 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-/* =========================
-   Types
-========================= */
 type ActivityType =
   | "USER_REGISTERED"
   | "SUBSCRIPTION_STARTED"
@@ -18,9 +15,6 @@ type ActivityRow = {
   occurred_at: string;
 };
 
-/* =========================
-   Badge helper (APRÈS imports)
-========================= */
 function ActivityBadge({ type }: { type: ActivityType }) {
   const base =
     "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium";
@@ -53,9 +47,6 @@ function ActivityBadge({ type }: { type: ActivityType }) {
   }
 }
 
-/* =========================
-   Page
-========================= */
 export default function AdminActivityPage() {
   const [activities, setActivities] = useState<ActivityRow[]>([]);
   const [page, setPage] = useState(1);

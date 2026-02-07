@@ -30,7 +30,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // 👉 Redirection volontaire vers login
     router.replace("/login");
   }
 
