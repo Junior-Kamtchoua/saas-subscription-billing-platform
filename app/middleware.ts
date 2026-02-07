@@ -8,26 +8,42 @@ export function middleware(request: NextRequest) {
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/register");
 
-  const isProtectedRoute =
-    pathname.startsWith("/admin") || pathname.startsWith("/customer");
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isCustomerRoute = pathname.startsWith("/customer");
 
-  // 🔒 Accès aux routes protégées sans session → login
-  if (isProtectedRoute && !sessionCookie) {
+  // 🔒 Pas connecté → login
+  if ((isAdminRoute || isCustomerRoute) && !sessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // 🔁 Accès aux routes auth alors qu’on est connecté → dashboard
-  if (isAuthRoute && sessionCookie) {
+  if (sessionCookie) {
     try {
       const session = JSON.parse(sessionCookie.value);
 
-      if (session.role === "ADMIN") {
+      // ❌ CUSTOMER essaye d’aller sur /admin
+      if (isAdminRoute && session.role !== "ADMIN") {
+        return NextResponse.redirect(
+          new URL("/customer/dashboard", request.url),
+        );
+      }
+
+      // ❌ ADMIN essaye d’aller sur /customer
+      if (isCustomerRoute && session.role !== "CUSTOMER") {
         return NextResponse.redirect(new URL("/admin/dashboard", request.url));
       }
 
-      return NextResponse.redirect(new URL("/customer/dashboard", request.url));
+      // 🔁 connecté + pages auth
+      if (isAuthRoute) {
+        return NextResponse.redirect(
+          new URL(
+            session.role === "ADMIN"
+              ? "/admin/dashboard"
+              : "/customer/dashboard",
+            request.url,
+          ),
+        );
+      }
     } catch {
-      // Cookie invalide → forcer login
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }

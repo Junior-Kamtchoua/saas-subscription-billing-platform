@@ -26,11 +26,30 @@ export async function GET() {
   const plansResult = await pool.query(`
     SELECT
       p.name,
-      COUNT(s.id) AS count
+      COUNT(*) AS count
     FROM subscriptions s
     JOIN plans p ON p.id = s.plan_id
     WHERE s.status = 'ACTIVE'
     GROUP BY p.name
+  `);
+
+  // 🔹 Nouveaux users par mois
+  const usersByMonthResult = await pool.query(`
+    SELECT
+      DATE_TRUNC('month', created_at) AS month,
+      COUNT(*) AS count
+    FROM users
+    GROUP BY month
+    ORDER BY month
+  `);
+
+  // 🔹 Abonnements par statut (ACTIVE / CANCELED)
+  const subscriptionsByStatusResult = await pool.query(`
+    SELECT
+      status,
+      COUNT(*) AS count
+    FROM subscriptions
+    GROUP BY status
   `);
 
   return NextResponse.json({
@@ -41,6 +60,14 @@ export async function GET() {
     })),
     subscriptionsByPlan: plansResult.rows.map((r) => ({
       name: r.name,
+      count: Number(r.count),
+    })),
+    usersByMonth: usersByMonthResult.rows.map((r) => ({
+      month: r.month.toISOString().slice(0, 7),
+      count: Number(r.count),
+    })),
+    subscriptionsByStatus: subscriptionsByStatusResult.rows.map((r) => ({
+      status: r.status,
       count: Number(r.count),
     })),
   });
