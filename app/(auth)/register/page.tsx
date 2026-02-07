@@ -64,6 +64,12 @@ export default function RegisterPage() {
         >
           {loading ? "Creating account..." : "Register"}
         </button>
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <a href="/login" className="font-medium text-black hover:underline">
+            Sign in
+          </a>
+        </p>
       </form>
 
       {message && (

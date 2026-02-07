@@ -65,6 +65,16 @@ export default function LoginPage() {
         >
           Sign in
         </button>
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don’t have an account?{" "}
+          <a
+            href="/register"
+            className="font-medium text-black hover:underline"
+          >
+            Create one
+          </a>
+        </p>
       </form>
 
       {message && (
